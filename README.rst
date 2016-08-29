@@ -1,6 +1,6 @@
-===============================
-Welcome to thecut-durationfield
-===============================
+====================
+thecut-durationfield
+====================
 
 
 .. image:: https://travis-ci.org/thecut/thecut-durationfield.svg
