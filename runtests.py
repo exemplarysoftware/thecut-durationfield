@@ -24,12 +24,16 @@ try:
         MIDDLEWARE_CLASSES=(),
         TEMPLATES=[
             {
-                'BACKEND': 'django.template.backends.django.DjangoTemplates',
-                'OPTIONS': {
-                    'loaders': [
-                        ('django.template.loaders.cached.Loader',
-                         ['django.template.loaders.filesystem.Loader',
-                          'django.template.loaders.app_directories.Loader'])
+                "BACKEND": "django.template.backends.django.DjangoTemplates",
+                "OPTIONS": {
+                    "loaders": [
+                        (
+                            "django.template.loaders.cached.Loader",
+                            [
+                                "django.template.loaders.filesystem.Loader",
+                                "django.template.loaders.app_directories.Loader",
+                            ],
+                        )
                     ],
                 },
             },
@@ -38,6 +42,7 @@ try:
 
     try:
         import django
+
         setup = django.setup
     except AttributeError:
         pass
@@ -46,6 +51,7 @@ try:
 
 except ImportError:
     import traceback
+
     traceback.print_exc()
     msg = "To fix this error, run: pip install -r requirements-test.txt"
     raise ImportError(msg)
@@ -53,7 +59,7 @@ except ImportError:
 
 def run_tests(*test_args):
     if not test_args:
-        test_args = ['thecut.durationfield.tests']
+        test_args = ["thecut.durationfield.tests"]
 
     # Run tests
     TestRunner = get_runner(settings)
@@ -65,5 +71,5 @@ def run_tests(*test_args):
         sys.exit(bool(failures))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_tests(*sys.argv[1:])

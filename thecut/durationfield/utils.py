@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Utility functions to convert back and forth between a ISO 8601
 representation as string and time delta object."""
-from dateutil.relativedelta import relativedelta
 import isodate
+from dateutil.relativedelta import relativedelta
 
 
 def convert_relativedelta_to_duration(delta):
@@ -10,9 +10,14 @@ def convert_relativedelta_to_duration(delta):
     :py:class:`~isodate.duration.Duration`."""
 
     duration = isodate.duration.Duration(
-        days=delta.days, seconds=delta.seconds,
-        microseconds=delta.microseconds, minutes=delta.minutes,
-        hours=delta.hours, months=delta.months, years=delta.years)
+        days=delta.days,
+        seconds=delta.seconds,
+        microseconds=delta.microseconds,
+        minutes=delta.minutes,
+        hours=delta.hours,
+        months=delta.months,
+        years=delta.years,
+    )
     return duration
 
 
@@ -32,26 +37,26 @@ def convert_duration_to_relativedelta(duration):
     # resulting relativeldelta in combination with a datetime. See
     # https://bugs.launchpad.net/dateutil/+bug/1204017 for a description of the
     # bug which makes this workaround necessary.
-    if hasattr(duration, 'years'):
+    if hasattr(duration, "years"):
         delta.years = int(duration.years)
 
-    if hasattr(duration, 'months'):
+    if hasattr(duration, "months"):
         delta.months = int(duration.months)
 
-    if hasattr(duration, 'days'):
+    if hasattr(duration, "days"):
         delta.days = duration.days
 
     # Some `Duration` objects have an associated timedelta.
-    if hasattr(duration, 'tdelta'):
+    if hasattr(duration, "tdelta"):
         delta.seconds = duration.tdelta.seconds
         delta.microseconds = duration.tdelta.microseconds
 
     # If we have a `timedelta`, we access the seconds and microseconds values
     # directly.
-    if hasattr(duration, 'seconds'):
+    if hasattr(duration, "seconds"):
         delta.seconds = duration.seconds
 
-    if hasattr(duration, 'microseconds'):
+    if hasattr(duration, "microseconds"):
         delta.microseconds = duration.microseconds
 
     return delta

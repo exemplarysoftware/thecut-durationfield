@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
-from . import utils
+
+
 from dateutil.relativedelta import relativedelta
-from django.forms.widgets import TextInput, Select
+from django.forms.widgets import Select, TextInput
 from isodate import duration_isoformat
+
+from . import utils
 
 
 class RelativeDeltaWidgetMixin(object):
-
     def _format_value(self, value):
 
         if isinstance(value, relativedelta):
@@ -20,11 +21,13 @@ class RelativeDeltaWidgetMixin(object):
 
         value = self._format_value(value)
         return super(RelativeDeltaWidgetMixin, self).render(
-            name, value, **kwargs)
+            name, value, **kwargs
+        )
 
     def _has_changed(self, initial, data):
         return super(RelativeDeltaWidgetMixin, self)._has_changed(
-            self._format_value(initial), data)
+            self._format_value(initial), data
+        )
 
 
 class RelativeDeltaTextInput(RelativeDeltaWidgetMixin, TextInput):

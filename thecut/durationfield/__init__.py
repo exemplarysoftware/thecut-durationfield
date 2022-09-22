@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
 
-__title__ = 'thecut-durationfield'
 
-__version__ = '2.0.3'
+__title__ = "thecut-durationfield"
 
-__url__ = 'https://github.com/thecut/thecut-durationfield'
+__version__ = "2.0.3"
 
-__author__ = 'The Cut Creative <development@thecut.net.au>'
+__url__ = "https://github.com/thecut/thecut-durationfield"
 
-__copyright__ = 'Copyright 2016 Busara Perth Pty Ltd'
+__author__ = "The Cut Creative <development@thecut.net.au>"
 
-__license__ = 'Apache 2.0'
+__copyright__ = "Copyright 2016 Busara Perth Pty Ltd"
 
-default_app_config = 'thecut.durationfield.apps.AppConfig'
+__license__ = "Apache 2.0"

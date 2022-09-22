@@ -1,38 +1,40 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
-from . import forms, utils
+
+
 from datetime import timedelta
-from dateutil.relativedelta import relativedelta
-from django.db import models
-from django.utils.translation import ugettext_lazy as _
-from django.core.exceptions import ValidationError
-from isodate.isoerror import ISO8601Error
+
 import isodate
+from dateutil.relativedelta import relativedelta
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+from isodate.isoerror import ISO8601Error
+
+from . import forms, utils
 
 
 class ISO8601DurationField(models.Field):
-    """Store and retrieve ISO 8601 formatted durations.
-
-    """
+    """Store and retrieve ISO 8601 formatted durations."""
 
     description = _("A duration of time (ISO 8601 format)")
 
     default_error_messages = {
-        'invalid': _("This value must be in ISO 8601 Duration format."),
-        'unknown_type': _("The value's type could not be converted"),
+        "invalid": _("This value must be in ISO 8601 Duration format."),
+        "unknown_type": _("The value's type could not be converted"),
     }
 
     def __init__(self, *args, **kwargs):
-        self.max_length = kwargs['max_length'] = 64
+        self.max_length = kwargs["max_length"] = 64
         super(ISO8601DurationField, self).__init__(*args, **kwargs)
 
     def get_internal_type(self):
-        return 'CharField'
+        return "CharField"
 
     def deconstruct(self, *args, **kwargs):
-        name, path, args, kwargs = super(ISO8601DurationField,
-                                         self).deconstruct()
-        del kwargs['max_length']
+        name, path, args, kwargs = super(
+            ISO8601DurationField, self
+        ).deconstruct()
+        del kwargs["max_length"]
         return name, path, args, kwargs
 
     def to_python(self, value):
@@ -46,16 +48,18 @@ class ISO8601DurationField(models.Field):
             return None
 
         # DB value is empty
-        if value == '':
+        if value == "":
             return None
 
-        if isinstance(value, isodate.duration.Duration) or isinstance(value, timedelta):
+        if isinstance(value, isodate.duration.Duration) or isinstance(
+            value, timedelta
+        ):
             return value
 
         try:
             duration = isodate.parse_duration(value)
         except ISO8601Error:
-            raise ValidationError(self.default_error_messages['invalid'])
+            raise ValidationError(self.default_error_messages["invalid"])
         return duration
 
     def get_prep_value(self, value):
@@ -65,7 +69,8 @@ class ISO8601DurationField(models.Field):
 
         if not isinstance(value, isodate.duration.Duration):
             raise ValidationError(
-                'Cannot convert objects that are not Durations.')
+                "Cannot convert objects that are not Durations."
+            )
 
         return isodate.duration_isoformat(value)
 
@@ -82,7 +87,7 @@ class RelativeDeltaField(ISO8601DurationField):
     """
 
     def formfield(self, **kwargs):
-        defaults = {'form_class': forms.RelativeDeltaChoiceField}
+        defaults = {"form_class": forms.RelativeDeltaChoiceField}
         defaults.update(kwargs)
         return super(RelativeDeltaField, self).formfield(**defaults)
 
@@ -103,11 +108,12 @@ class RelativeDeltaField(ISO8601DurationField):
         # Build the Duration object from the given relativedelta.
         duration = utils.convert_relativedelta_to_duration(value)
         duration_string = super(RelativeDeltaField, self).get_prep_value(
-            duration)
+            duration
+        )
 
         return duration_string
 
     def value_to_string(self, obj):
         val = self._get_val_from_obj(obj)
         s = self.get_prep_value(val)
-        return '' if s is None else s
+        return "" if s is None else s
