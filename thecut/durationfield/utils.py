@@ -3,32 +3,20 @@
 representation as string and time delta object."""
 import isodate
 from dateutil.relativedelta import relativedelta
-from datetime import timedelta
 
 
 def convert_relativedelta_to_duration(delta):
-    """Convert a :py:class:`datetime.relativedelta` or
-    :py:class:`~dateutil.relativedelta.relativedelta` to a
-    :py:class:`~isodate.duration.Duration`."""
-
-    # convert timedelta to relativedelta.
-
-    if isinstance(delta, relativedelta):
-        return isodate.duration.Duration(
-            days=delta.days,
-            seconds=delta.seconds,
-            microseconds=delta.microseconds,
-            minutes=delta.minutes,
-            hours=delta.hours,
-            months=delta.months,
-            years=delta.years,
-        )
-    elif isinstance(delta, timedelta):
-        return isodate.duration.Duration(
-            days=delta.days,
-            seconds=delta.seconds,
-            microseconds=delta.microseconds
-        )
+    """Convert a :py:class:`~dateutil.relativedelta.relativedelta`
+    to a :py:class:`~isodate.duration.Duration`."""
+    return isodate.duration.Duration(
+        days=delta.days,
+        seconds=delta.seconds,
+        microseconds=delta.microseconds,
+        minutes=delta.minutes,
+        hours=delta.hours,
+        months=delta.months,
+        years=delta.years,
+    )
 
 
 def convert_duration_to_relativedelta(duration):
@@ -70,3 +58,13 @@ def convert_duration_to_relativedelta(duration):
         delta.microseconds = duration.microseconds
 
     return delta
+
+def convert_timedelta_to_relativedelta(td):
+    return relativedelta(days=td.days, seconds=td.seconds, microseconds=td.microseconds)
+
+def convert_timedelta_to_duration(delta):
+    """Convert a :py:class:`datetime.timedelta` to a :py:class:`~isodate.duration.Duration`."""
+    # Using a relativedelta as an intermediary is a good way to end up with a
+    # more human-readable duration string as relative delta will e.g. convert
+    # 60 seconds to a minute.
+    return convert_relativedelta_to_duration(convert_timedelta_to_relativedelta(delta))

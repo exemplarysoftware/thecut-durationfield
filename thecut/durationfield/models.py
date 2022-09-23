@@ -2,6 +2,7 @@
 
 
 from datetime import timedelta
+from time import time
 
 import isodate
 from dateutil.relativedelta import relativedelta
@@ -25,15 +26,13 @@ class ISO8601DurationField(models.Field):
 
     def __init__(self, *args, **kwargs):
         self.max_length = kwargs["max_length"] = 64
-        super(ISO8601DurationField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_internal_type(self):
         return "CharField"
 
     def deconstruct(self, *args, **kwargs):
-        name, path, args, kwargs = super(
-            ISO8601DurationField, self
-        ).deconstruct()
+        name, path, args, kwargs = super().deconstruct()
         del kwargs["max_length"]
         return name, path, args, kwargs
 
@@ -53,7 +52,7 @@ class ISO8601DurationField(models.Field):
 
         if isinstance(value, isodate.duration.Duration) or isinstance(
             value, timedelta
-        ):
+        ) or isinstance(value, timedelta):
             return value
 
         try:
@@ -89,15 +88,22 @@ class RelativeDeltaField(ISO8601DurationField):
     def formfield(self, **kwargs):
         defaults = {"form_class": forms.RelativeDeltaChoiceField}
         defaults.update(kwargs)
-        return super(RelativeDeltaField, self).formfield(**defaults)
+        return super().formfield(**defaults)
 
     def to_python(self, value):
+        # If the value is already a relativedelta, return it as-is.
         if isinstance(value, relativedelta):
             return value
 
-        duration = super(RelativeDeltaField, self).to_python(value)
+        # If the value is a timedelta, convert it to a relativedelta.
+        if isinstance(value, timedelta):
+            return utils.convert_timedelta_to_relativedelta(timedelta)
+
+        duration = super().to_python(value)
 
         if duration:
+            # type check
+            assert isinstance(value, isodate.duration.Duration)
             return utils.convert_duration_to_relativedelta(duration)
 
     def get_prep_value(self, value):
@@ -106,12 +112,14 @@ class RelativeDeltaField(ISO8601DurationField):
             return None
 
         # Build the Duration object from the given relativedelta.
-        duration = utils.convert_relativedelta_to_duration(value)
-        duration_string = super(RelativeDeltaField, self).get_prep_value(
-            duration
-        )
+        if isinstance(value, relativedelta):
+            duration = utils.convert_relativedelta_to_duration(value)
+        elif isinstance(value, timedelta):
+            duration = utils.convert_timedelta_to_duration(value)
 
-        return duration_string
+        # We have a Duration object. We can use the parent class's method to
+        # convert it to a string.
+        return super().get_prep_value(duration)
 
     def value_to_string(self, obj):
         val = self._get_val_from_obj(obj)
