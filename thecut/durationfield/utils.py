@@ -3,22 +3,32 @@
 representation as string and time delta object."""
 import isodate
 from dateutil.relativedelta import relativedelta
+from datetime import timedelta
 
 
 def convert_relativedelta_to_duration(delta):
-    """Convert a :py:class:`~datetime.relativedelta.relativedelta` to a
+    """Convert a :py:class:`datetime.relativedelta` or
+    :py:class:`~dateutil.relativedelta.relativedelta` to a
     :py:class:`~isodate.duration.Duration`."""
 
-    duration = isodate.duration.Duration(
-        days=delta.days,
-        seconds=delta.seconds,
-        microseconds=delta.microseconds,
-        minutes=delta.minutes,
-        hours=delta.hours,
-        months=delta.months,
-        years=delta.years,
-    )
-    return duration
+    # convert timedelta to relativedelta.
+
+    if isinstance(delta, relativedelta):
+        return isodate.duration.Duration(
+            days=delta.days,
+            seconds=delta.seconds,
+            microseconds=delta.microseconds,
+            minutes=delta.minutes,
+            hours=delta.hours,
+            months=delta.months,
+            years=delta.years,
+        )
+    elif isinstance(delta, timedelta):
+        return isodate.duration.Duration(
+            days=delta.days,
+            seconds=delta.seconds,
+            microseconds=delta.microseconds
+        )
 
 
 def convert_duration_to_relativedelta(duration):

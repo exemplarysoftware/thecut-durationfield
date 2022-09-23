@@ -80,7 +80,7 @@ class ISO8601DurationField(models.Field):
 
 
 class RelativeDeltaField(ISO8601DurationField):
-    """Store and retrieve :py:class:`~datetime.relativedelta.relativedelta`.
+    """Store and retrieve :py:class:`~dateutil.relativedelta.relativedelta`.
 
     Stores the relativedelta as a string representation of a
     :py:class:`~isodate.duration.Duration`.
